@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import String
+from sqlalchemy import String, DateTime, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import mapped_column, Mapped
 
@@ -22,12 +22,13 @@ class User(Base):
         nullable=False,
     )
 
-    name: Mapped[str] = mapped_column(
+    hashed_password: Mapped[str] = mapped_column(
         String,
         nullable=False,
     )
 
-    hashed_password: Mapped[str] = mapped_column(
-        String,
+    created_at: Mapped[object] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
         nullable=False,
     )
