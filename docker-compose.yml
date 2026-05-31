@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    container_name: invoice_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:16
+    container_name: invoice_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: invoice_db
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: invoice_redis
+    ports:
+      - "6379:6379"

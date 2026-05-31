@@ -1,0 +1,16 @@
+fastapi # backend framework
+uvicorn[standard] # run FastAPI as HTTP server
+
+sqlalchemy # ORM - mapping python classess to SQL tables
+psycopg2-binary # PostgreSQL driver
+alembic==1.18.4 # database migration
+
+python-jose[cryptography] # JWT token
+passlib[bcrypt] # password hash
+
+pydantic-settings # .env loading
+
+python-multipart # form data, file uploads
+email-validator # pydantic email validation
+
+python-dotenv
