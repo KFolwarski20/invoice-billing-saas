@@ -6,7 +6,8 @@ psycopg2-binary # PostgreSQL driver
 alembic==1.18.4 # database migration
 
 python-jose[cryptography] # JWT token
-passlib[bcrypt] # password hash
+passlib[bcrypt]==1.7.4 # password hash
+bcrypt==4.1.2
 
 pydantic-settings # .env loading
 

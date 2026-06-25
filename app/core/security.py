@@ -52,3 +52,38 @@ def decode_token(token: str):
         )
     except JWTError:
         return None
+
+
+def create_refresh_token(subject: str):
+    expire = datetime.now(timezone.utc) + timedelta(
+        days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+    )
+
+    to_encode = {
+        "sub": subject,
+        "exp": expire,
+        "type": "refresh",
+    }
+
+    return jwt.encode(
+        to_encode,
+        settings.REFRESH_SECRET_KEY,
+        algorithm=ALGORITHM,
+    )
+
+
+def decode_refresh_token(token: str):
+    try:
+        payload = jwt.decode(
+            token,
+            settings.REFRESH_SECRET_KEY,
+            algorithms=[ALGORITHM],
+        )
+
+        if payload.get("type") != "refresh":
+            return None
+
+        return payload
+
+    except JWTError:
+        return None

@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy import String, DateTime, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from app.db.base import Base
 
@@ -31,4 +31,9 @@ class User(Base):
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
+    )
+
+    customers = relationship(
+        "Customer",
+        back_populates="user",
     )

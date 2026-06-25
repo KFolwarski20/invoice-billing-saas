@@ -5,7 +5,9 @@ from app.models.user import User
 from app.core.security import (
     hash_password,
     verify_password,
-    create_access_token
+    create_access_token,
+    create_refresh_token,
+    decode_refresh_token,
 )
 
 
@@ -43,4 +45,19 @@ def authenticate_user(db: Session, email: str, password: str)\
 
 
 def create_token_for_user(user: User):
-    return create_access_token(subject=str(user.id))
+    return {
+        "access_token": create_access_token(subject=str(user.id)),
+        "refresh_token": create_refresh_token(subject=str(user.id)),
+        "token_type": "bearer",
+    }
+
+
+def verify_refresh_token(db: Session, refresh_token: str):
+    payload = decode_refresh_token(refresh_token)
+
+    if not payload:
+        return None
+
+    user_id = payload.get("sub")
+
+    return db.query(User).filter(User.id == user_id).first()

@@ -17,18 +17,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
 
 from app.db.base import Base  # noqa: E402
-import app.models.user  # noqa: F401, E402
+
+# IMPORTANT: import all models so metadata is complete
+from app.models import user, customer  # noqa: F401, E402
 
 config = context.config
 
 # -----------------------
 # DB URL
 # -----------------------
-database_url = os.getenv("DATABASE_URL")
-if not database_url:
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set")
 
-config.set_main_option("sqlalchemy.url", database_url)
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # -----------------------
 # LOGGING
@@ -42,9 +44,6 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 
-# -----------------------
-# OFFLINE MODE
-# -----------------------
 def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
 
@@ -53,18 +52,17 @@ def run_migrations_offline():
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
+        compare_server_default=True,
     )
 
     with context.begin_transaction():
         context.run_migrations()
 
 
-# -----------------------
-# ONLINE MODE (IMPORTANT FIX)
-# -----------------------
 def run_migrations_online():
     connectable = create_engine(
-        database_url,
+        DATABASE_URL,
         poolclass=NullPool,
     )
 
@@ -72,15 +70,15 @@ def run_migrations_online():
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
+            compare_type=True,
+            compare_server_default=True,
+            compare_foreign_keys=True,
         )
 
         with context.begin_transaction():
             context.run_migrations()
 
 
-# -----------------------
-# RUN
-# -----------------------
 if context.is_offline_mode():
     run_migrations_offline()
 else:
